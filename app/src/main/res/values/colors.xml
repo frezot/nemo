@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#5DAA35</color>
+    <color name="colorPrimaryDark">#2F6E1D</color>
+    <color name="colorActionBar">#4A8D2A</color>
+    <color name="colorAccent">#71C83C</color>
+    <color name="colorAccentLight">#C8F0B3</color>
+    <color name="statusOpen">#5DAA35</color>
+    <color name="statusStarting">#B8C5D1</color>
+    <color name="statusStartingText">#1D2A34</color>
+    <color name="statusStopping">#D7E0E8</color>
+    <color name="statusStoppingText">#22313D</color>
+    <color name="ok">#3FAE2A</color>
+    <color name="warning">#FF9800</color>
+    <color name="danger">#F80013</color>
+</resources>

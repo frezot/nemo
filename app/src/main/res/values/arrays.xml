@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="ip_mode">
+        <item>ipv4</item>
+        <item>ipv6</item>
+        <item>both</item>
+    </string-array>
+    <string-array name="ip_mode_labels">
+        <item>@string/ipv4_only</item>
+        <item>@string/ipv6_only</item>
+        <item>@string/ip_both</item>
+    </string-array>
+
+    <string-array name="conditioner_profile_ids">
+        <item>loss_100</item>
+        <item>very_bad_network</item>
+        <item>edge</item>
+        <item>3g</item>
+        <item>dsl</item>
+        <item>hspa_plus</item>
+        <item>lte_unstable</item>
+        <item>lte</item>
+        <item>5g_unstable</item>
+        <item>5g</item>
+        <item>wifi</item>
+        <item>wifi_80211ac</item>
+        <item>custom</item>
+    </string-array>
+    <string-array name="conditioner_profile_labels">
+        <item>@string/profile_100_loss</item>
+        <item>@string/profile_very_bad_network</item>
+        <item>@string/profile_edge</item>
+        <item>@string/profile_3g</item>
+        <item>@string/profile_dsl</item>
+        <item>@string/profile_hspa_plus</item>
+        <item>@string/profile_lte_unstable</item>
+        <item>@string/profile_lte</item>
+        <item>@string/profile_5g_unstable</item>
+        <item>@string/profile_5g</item>
+        <item>@string/profile_wifi</item>
+        <item>@string/profile_wifi_80211ac</item>
+        <item>@string/profile_custom</item>
+    </string-array>
+</resources>
