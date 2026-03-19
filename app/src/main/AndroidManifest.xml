@@ -15,7 +15,7 @@
     <application
         android:name=".NemoApplication"
         android:icon="@drawable/ic_nemo_launcher"
-        android:label="@string/nemo_app_name"
+        android:label="${appLabel}"
         android:roundIcon="@drawable/ic_nemo_launcher"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"

@@ -10,4 +10,9 @@
     <color name="statusStartingText">#ECF4FA</color>
     <color name="statusStopping">#2E3C48</color>
     <color name="statusStoppingText">#E7EFF6</color>
+    <color name="visualizerRail">#33000000</color>
+    <color name="visualizerTraffic">#A5F67B</color>
+    <color name="visualizerDrop">#FF7A7A</color>
+    <color name="visualizerDropStrong">#FF4747</color>
+    <color name="visualizerStall">#7FCFFF</color>
 </resources>

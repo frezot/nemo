@@ -9,6 +9,7 @@ import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.NonNull
@@ -30,6 +31,7 @@ import com.nemo.networkconditioner.model.AppState
 import com.nemo.networkconditioner.model.CaptureStats
 import com.nemo.networkconditioner.model.ConditioningProfile
 import com.nemo.networkconditioner.model.Prefs
+import com.nemo.networkconditioner.views.TrafficPulseView
 
 class StatusFragment : Fragment(), AppStateListener {
     private var activityHost: MainActivity? = null
@@ -39,6 +41,10 @@ class StatusFragment : Fragment(), AppStateListener {
     private lateinit var targetAppsCard: MaterialCardView
     private lateinit var statusTitle: TextView
     private lateinit var statusDetail: TextView
+    private lateinit var statusTransferRow: LinearLayout
+    private lateinit var statusUploadDetail: TextView
+    private lateinit var statusDownloadDetail: TextView
+    private lateinit var trafficPulseView: TrafficPulseView
     private lateinit var profilePickerTitle: TextView
     private lateinit var targetAppsSummary: TextView
     private lateinit var profileLatencyLabel: TextView
@@ -119,6 +125,10 @@ class StatusFragment : Fragment(), AppStateListener {
         targetAppsCard = view.findViewById(R.id.target_apps_card)
         statusTitle = view.findViewById(R.id.status_title)
         statusDetail = view.findViewById(R.id.status_detail)
+        statusTransferRow = view.findViewById(R.id.status_transfer_row)
+        statusUploadDetail = view.findViewById(R.id.status_upload_detail)
+        statusDownloadDetail = view.findViewById(R.id.status_download_detail)
+        trafficPulseView = view.findViewById(R.id.traffic_pulse_view)
         profilePickerTitle = view.findViewById(R.id.profile_picker_title)
         targetAppsSummary = view.findViewById(R.id.target_apps_summary)
         profileLatencyLabel = view.findViewById(R.id.profile_latency_label)
@@ -166,7 +176,15 @@ class StatusFragment : Fragment(), AppStateListener {
 
         CaptureService.observeStats(viewLifecycleOwner) { stats ->
             lastStats = stats
-            refreshStatus()
+            trafficPulseView.submitStats(
+                stats.bytes_sent,
+                stats.bytes_rcvd,
+                stats.dropped_sent_pkts,
+                stats.dropped_rcvd_pkts,
+                stats.stall_uplink_active != 0,
+                stats.stall_downlink_active != 0
+            )
+            refreshLiveStatusUi(activityHost?.getState() ?: return@observeStats)
         }
 
         lastStats = CaptureService.getStats()
@@ -218,6 +236,11 @@ class StatusFragment : Fragment(), AppStateListener {
         }
 
         val state = activityHost!!.getState()
+        refreshStaticStatusUi(state)
+        refreshLiveStatusUi(state)
+    }
+
+    private fun refreshStaticStatusUi(state: AppState) {
         val cardEnabled = state == AppState.ready || state == AppState.running
         statusCard.isEnabled = cardEnabled
         statusCard.isClickable = cardEnabled
@@ -233,27 +256,54 @@ class StatusFragment : Fragment(), AppStateListener {
             AppState.starting -> {
                 statusTitle.setText(R.string.vpn_starting)
                 statusDetail.setText(R.string.vpn_starting_detail)
+                statusDetail.visibility = View.VISIBLE
+                statusTransferRow.visibility = View.GONE
             }
             AppState.running -> {
                 statusTitle.setText(R.string.vpn_running)
-                statusDetail.text = getString(
-                    R.string.transferred_bytes,
-                    Utils.formatBytes(lastStats.bytes_sent + lastStats.bytes_rcvd)
-                )
+                statusDetail.visibility = View.GONE
+                statusTransferRow.visibility = View.VISIBLE
+                bindTransferredDetails()
             }
             AppState.stopping -> {
                 statusTitle.setText(R.string.vpn_stopping)
                 statusDetail.setText(R.string.vpn_stopping_detail)
+                statusDetail.visibility = View.VISIBLE
+                statusTransferRow.visibility = View.GONE
             }
             AppState.ready -> {
                 statusTitle.setText(R.string.vpn_stopped)
                 statusDetail.setText(R.string.vpn_stopped_detail)
+                statusDetail.visibility = View.VISIBLE
+                statusTransferRow.visibility = View.GONE
             }
         }
 
         applyStatusCardTheme(state)
         refreshProfileUi(getCommittedProfile())
         refreshAppFilterUi(Prefs.getAppFilter(prefs))
+    }
+
+    private fun refreshLiveStatusUi(state: AppState) {
+        when (state) {
+            AppState.running -> {
+                bindTransferredDetails()
+            }
+            AppState.starting -> statusDetail.setText(R.string.vpn_starting_detail)
+            AppState.stopping -> statusDetail.setText(R.string.vpn_stopping_detail)
+            AppState.ready -> statusDetail.setText(R.string.vpn_stopped_detail)
+        }
+        refreshTrafficPulse()
+    }
+
+    private fun refreshTrafficPulse() {
+        val state = activityHost?.getState() ?: return
+        trafficPulseView.maybeAdvance(state)
+    }
+
+    private fun bindTransferredDetails() {
+        statusUploadDetail.text = getString(R.string.transferred_upload_bytes, Utils.formatBytes(lastStats.bytes_sent))
+        statusDownloadDetail.text = getString(R.string.transferred_download_bytes, Utils.formatBytes(lastStats.bytes_rcvd))
     }
 
     private fun refreshAppFilterUi(appFilter: Set<String>) {
@@ -313,6 +363,8 @@ class StatusFragment : Fragment(), AppStateListener {
         statusCard.setCardBackgroundColor(backgroundColor)
         statusTitle.setTextColor(titleColor)
         statusDetail.setTextColor(detailColor)
+        statusUploadDetail.setTextColor(detailColor)
+        statusDownloadDetail.setTextColor(detailColor)
     }
 
     private fun bindExplainDialog(view: TextView, titleRes: Int, messageRes: Int) {

@@ -278,9 +278,15 @@ static void perform_dpi(nemo_core_t *pd, pkt_context_t *pctx) {
  * passed (e.g. after a select with no packet). */
 void nemo_housekeeping(nemo_core_t *pd) {
     if(dump_capture_stats_now ||
-            (pd->capture_stats.new_stats && ((pd->now_ms - pd->capture_stats.last_update_ms) >= CAPTURE_STATS_UPDATE_FREQUENCY_MS))) {
+            ((pd->now_ms - pd->capture_stats.last_update_ms) >= CAPTURE_STATS_UPDATE_FREQUENCY_MS)) {
         dump_capture_stats_now = false;
         //log_d("Send stats");
+
+        pd->capture_stats.stall_active = tc_is_stall_active(&pd->conditioner, pd->now_ms) ? 1 : 0;
+        pd->capture_stats.stall_uplink_active =
+                tc_is_stall_active_for_direction(&pd->conditioner, TC_DIR_UPLINK, pd->now_ms) ? 1 : 0;
+        pd->capture_stats.stall_downlink_active =
+                tc_is_stall_active_for_direction(&pd->conditioner, TC_DIR_DOWNLINK, pd->now_ms) ? 1 : 0;
 
         if(pd->vpn_capture)
             zdtun_get_stats(pd->zdt, &pd->stats);
@@ -288,7 +294,6 @@ void nemo_housekeeping(nemo_core_t *pd) {
         if(pd->cb.send_stats_dump)
             pd->cb.send_stats_dump(pd);
 
-        pd->capture_stats.new_stats = false;
         pd->capture_stats.last_update_ms = pd->now_ms;
     }
 }
@@ -367,8 +372,6 @@ void nemo_account_stats(nemo_core_t *pd, pkt_context_t *pctx) {
         }
     }
 
-    /* New stats to notify */
-    pd->capture_stats.new_stats = true;
     nemo_notify_connection_update(pd, pctx->tuple, pctx->data);
 }
 

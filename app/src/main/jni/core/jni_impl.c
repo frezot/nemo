@@ -59,7 +59,11 @@ static void sendStatsDump(nemo_core_t *pd) {
     }
 
     (*env)->CallVoidMethod(env, stats_obj, mids.statsSetData,
-                           capstats->sent_bytes, capstats->rcvd_bytes);
+                           capstats->sent_bytes, capstats->rcvd_bytes,
+                           capstats->dropped_pkts,
+                           capstats->dropped_sent_pkts, capstats->dropped_rcvd_pkts,
+                           capstats->stall_active,
+                           capstats->stall_uplink_active, capstats->stall_downlink_active);
 
     if(!jniCheckException(env)) {
         (*env)->CallVoidMethod(env, pd->capture_service, mids.sendStatsDump, stats_obj);
@@ -97,7 +101,7 @@ static void init_jni(JNIEnv *env) {
     mids.sendStatsDump = jniGetMethodID(env, cls.vpn_service, "sendStatsDump", "(Lcom/nemo/networkconditioner/model/CaptureStats;)V");
     mids.sendServiceStatus = jniGetMethodID(env, cls.vpn_service, "sendServiceStatus", "(Ljava/lang/String;)V");
     mids.statsInit = jniGetMethodID(env, cls.stats, "<init>", "()V");
-    mids.statsSetData = jniGetMethodID(env, cls.stats, "setData", "(JJ)V");
+    mids.statsSetData = jniGetMethodID(env, cls.stats, "setData", "(JJJJJIII)V");
 }
 
 /* ******************************************************* */

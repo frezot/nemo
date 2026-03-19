@@ -49,6 +49,41 @@
                     android:layout_marginTop="8dp"
                     android:textSize="15sp"
                     tools:text="Tap to start" />
+
+                <LinearLayout
+                    android:id="@+id/status_transfer_row"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:visibility="gone"
+                    tools:visibility="visible">
+
+                    <TextView
+                        android:id="@+id/status_upload_detail"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="start"
+                        android:textSize="15sp"
+                        tools:text="↑ 603.4 KB" />
+
+                    <TextView
+                        android:id="@+id/status_download_detail"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="end"
+                        android:textSize="15sp"
+                        tools:text="↓ 963.4 KB" />
+                </LinearLayout>
+
+                <com.nemo.networkconditioner.views.TrafficPulseView
+                    android:id="@+id/traffic_pulse_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:layout_marginTop="14dp" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 

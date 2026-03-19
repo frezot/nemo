@@ -79,7 +79,8 @@
     <string name="stall_interval_seconds">Stall interval (s)</string>
     <string name="target_apps">Target apps</string>
     <string name="target_apps_help">Select the applications to capture</string>
-    <string name="transferred_bytes">Transferred: %1$s</string>
+    <string name="transferred_download_bytes">↓ %1$s</string>
+    <string name="transferred_upload_bytes">↑ %1$s</string>
     <string name="unknown_app">Unknown</string>
     <string name="unknown_app_info">"Unknown" marks connections whose app could not be determined</string>
     <string name="uplink_kbps">Uplink bandwidth (kbps)</string>

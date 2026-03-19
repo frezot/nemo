@@ -9,7 +9,7 @@
 #include "common/uid_resolver.h"
 #include "third_party/uthash.h"
 
-#define CAPTURE_STATS_UPDATE_FREQUENCY_MS 300
+#define CAPTURE_STATS_UPDATE_FREQUENCY_MS 250
 #define SELECT_TIMEOUT_MS 250
 #define VPN_BUFFER_SIZE 32768
 #define MAX_HOST_LRU_SIZE 256
@@ -23,10 +23,15 @@ typedef struct {
     jlong rcvd_bytes;
     jlong ipv6_sent_bytes;
     jlong ipv6_rcvd_bytes;
+    jlong dropped_pkts;
+    jlong dropped_sent_pkts;
+    jlong dropped_rcvd_pkts;
     jint sent_pkts;
     jint rcvd_pkts;
+    jint stall_active;
+    jint stall_uplink_active;
+    jint stall_downlink_active;
 
-    bool new_stats;
     u_int64_t last_update_ms;
 } capture_stats_t;
 
@@ -262,6 +267,8 @@ int tc_flush_uplink(nemo_core_t *pd, zdtun_t *zdt,
                     int (*process_packet)(nemo_core_t *pd, zdtun_t *zdt, char *buffer, int size));
 int tc_flush_downlink(nemo_core_t *pd);
 uint32_t tc_get_next_timeout_ms(traffic_conditioner_t *tc, uint64_t now_ms, uint32_t fallback_ms);
+bool tc_is_stall_active(const traffic_conditioner_t *tc, uint64_t now_ms);
+bool tc_is_stall_active_for_direction(const traffic_conditioner_t *tc, tc_direction_t direction, uint64_t now_ms);
 
 // Utility
 char* get_appname_by_uid(nemo_core_t *pd, int uid, char *buf, int bufsize);

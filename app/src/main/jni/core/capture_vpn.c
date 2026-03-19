@@ -179,6 +179,8 @@ static int remote2vpn(zdtun_t *zdt, zdtun_pkt_t *pkt, const zdtun_conn_t *conn_i
         case TC_RESULT_QUEUED:
             return 0;
         case TC_RESULT_DROP:
+            pd->capture_stats.dropped_pkts++;
+            pd->capture_stats.dropped_rcvd_pkts++;
             return 0;
         case TC_RESULT_ABORT:
             return -1;
@@ -424,7 +426,11 @@ int run_vpn(nemo_core_t *pd) {
                 nemo_refresh_time(pd);
                 switch (tc_enqueue_uplink(&pd->conditioner, buffer, size, pd->now_ms)) {
                     case TC_RESULT_QUEUED:
+                        goto housekeeping;
                     case TC_RESULT_DROP:
+                        pd->capture_stats.dropped_pkts++;
+                        pd->capture_stats.dropped_sent_pkts++;
+                        goto housekeeping;
                     case TC_RESULT_ABORT:
                         goto housekeeping;
                     case TC_RESULT_BYPASS:

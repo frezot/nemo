@@ -401,3 +401,15 @@ uint32_t tc_get_next_timeout_ms(traffic_conditioner_t *tc, uint64_t now_ms, uint
         return fallback_ms;
     return min_delay < fallback_ms ? min_delay : fallback_ms;
 }
+
+bool tc_is_stall_active(const traffic_conditioner_t *tc, uint64_t now_ms) {
+    return tc->enabled && (
+            (tc->uplink.stall_until_ms > now_ms) ||
+            (tc->downlink.stall_until_ms > now_ms));
+}
+
+bool tc_is_stall_active_for_direction(const traffic_conditioner_t *tc, tc_direction_t direction, uint64_t now_ms) {
+    const traffic_conditioner_direction_t *dir = (direction == TC_DIR_UPLINK) ?
+            &tc->uplink : &tc->downlink;
+    return tc->enabled && (dir->stall_until_ms > now_ms);
+}

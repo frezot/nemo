@@ -59,7 +59,6 @@ class CaptureService : VpnService(), Runnable {
     private var vpnIpv4: String? = null
     private var vpnDns: String? = null
     private var dnsServer: String? = null
-    private var lastBytes = 0L
     private var appFilterUids = IntArray(0)
     private lateinit var statusBuilder: NotificationCompat.Builder
     private var monitoredNetwork = 0L
@@ -112,7 +111,6 @@ class CaptureService : VpnService(), Runnable {
     private fun initializeRuntimeState() {
         vpnDns = VPN_VIRTUAL_DNS_SERVER
         vpnIpv4 = VPN_IP_ADDRESS
-        lastBytes = 0
         lowMemory = false
         HAS_ERROR = false
     }
@@ -559,7 +557,6 @@ class CaptureService : VpnService(), Runnable {
     }
 
     fun sendStatsDump(stats: CaptureStats) {
-        lastBytes = stats.bytes_sent + stats.bytes_rcvd
         lastStats.postValue(stats)
     }
 
